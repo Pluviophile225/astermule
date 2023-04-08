@@ -24,10 +24,15 @@ func SetLogger(log *logrus.Entry) {
 	logger = log
 }
 
-func StartServer(cp *parser.ControlPlane, address string, port uint, target string) error {
+func StartServer(cp *parser.ControlPlane, address string, port uint, target string, entryparam string) error {
+
+	// TODO
+	// Convert entryparam to ActionMap content
+	// map[init] = string
+	// map[string]interface{}
+
 	http.HandleFunc(target, launchHandler)
 	controlPlane = cp
-
 	launchAllThread()
 
 	listenAddr := address + ":" + strconv.FormatUint(uint64(port), formatBase)
@@ -41,7 +46,8 @@ func StartServer(cp *parser.ControlPlane, address string, port uint, target stri
 }
 
 // Notice! we don't care what the user sends! this handler is just a trigger that starts the process!
-func launchHandler(w http.ResponseWriter, _ *http.Request) {
+func launchHandler(w http.ResponseWriter, req *http.Request) {
+
 	beforeServerStart()
 	w.Write(afterServerStart())
 }
@@ -59,6 +65,8 @@ func beforeServerStart() {
 }
 
 func afterServerStart() []byte {
+	// ActionMap [ExitName]
+	// ActionMap
 	res := parser.NewMessage(true, "")
 	for i := range controlPlane.Exit {
 		msg := <-controlPlane.Exit[i]

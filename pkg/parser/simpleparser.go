@@ -46,6 +46,12 @@ func (s *SimpleParser) makeChannelGroup(d *dag.DAG) {
 			s.ChanGroup[node.Name].ReadCh = append(s.ChanGroup[node.Name].ReadCh, ch)
 		}
 	}
+	// for _, node := range d.Nodes {
+	// 	if len(s.ChanGroup[node.Name].WriteCh) == 0 {
+	// 		cmd.ExitName= append(cmd.ExitName, node.Name)
+	// 	}
+	// }
+
 }
 
 func (s *SimpleParser) scanChannelGroup(d *dag.DAG) ([]chan<- Message, []<-chan Message) {
@@ -75,33 +81,34 @@ func (s *SimpleParser) makeFunc(d *dag.DAG) []func() {
 		f := func() {
 			for {
 				logger.Infoln("func register:", node.Name)
-				msgs := make([]Message, 0)
 				for _, readCh := range chGrp.ReadCh {
-					msg := <-readCh
-					msgs = append(msgs, msg)
+					<-readCh
 				}
 
 				logger.Infoln("func launch:", node.Name)
 
-				// TODO: Check error
-				mergeMsg := &Message{}
-				for i := range msgs {
-					msgs[i].DeepMergeInto(mergeMsg)
-				}
+				// TODO
+				// This is where the method is called to get the parameters from the ActionMap
+				// data = fun(ActionMap,node.ParamFormat)
 
+				data := ""
 				// Prepare sendMsg
 				sendMsg := &Message{}
 				sendMsg.Status.Health = true
 
 				// Call http client
 				logger.Infoln("send msg to", node.URL)
-				res, err := httpclient.Send(node.Action, node.URL, mergeMsg.Data)
+
+				// Determine whether to use a Get or Post request
+				res, err := httpclient.Send(node.Action, node.URL, data)
 				if err != nil {
 					logger.Errorln("httpclient error:", err)
 					sendMsg.Status.Health = false
 				} else {
 					logger.Infoln("receive respense:", res)
-					sendMsg.Data = res
+					// TODO
+					// Put the result into the global variable ActionMap
+					// ActionMap[node.name] = res
 				}
 
 				for _, writeCh := range chGrp.WriteCh {

@@ -3,11 +3,11 @@ package dag
 import "testing"
 
 func TestPreflightEntryAndExit(t *testing.T) {
-	A := NewNode("A", "GET", "http://10.244.1.10:8080", []string{})
-	B := NewNode("B", "GET", "http://10.244.1.11:8080", []string{})
-	C := NewNode("C", "POST", "http://10.244.1.12:8080", []string{"A", "B"})
-	D := NewNode("D", "GET", "http://10.244.1.13:8080", []string{"A", "C"})
-	E := NewNode("E", "GET", "http://10.244.1.14:8080", []string{"B"})
+	A := NewNode("A", "GET", "http://10.244.1.10:8080", []string{}, "")
+	B := NewNode("B", "GET", "http://10.244.1.11:8080", []string{}, "")
+	C := NewNode("C", "POST", "http://10.244.1.12:8080", []string{"A", "B"}, "")
+	D := NewNode("D", "GET", "http://10.244.1.13:8080", []string{"A", "C"}, "")
+	E := NewNode("E", "GET", "http://10.244.1.14:8080", []string{"B"}, "")
 
 	dag := NewDAG()
 	dag.Nodes = append(dag.Nodes, *A)

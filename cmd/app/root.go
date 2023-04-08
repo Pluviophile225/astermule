@@ -12,6 +12,7 @@ import (
 	"github.com/kasterism/astermule/pkg/dag"
 	"github.com/kasterism/astermule/pkg/handlers"
 	"github.com/kasterism/astermule/pkg/parser"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -58,7 +59,7 @@ func Run(ctx context.Context, logger *logrus.Logger, opts *options.Options) erro
 	p := parser.NewSimpleParser()
 	controlPlane := p.Parse(graph)
 
-	err = handlers.StartServer(&controlPlane, opts.Address, opts.Port, opts.Target)
+	err = handlers.StartServer(&controlPlane, opts.Address, opts.Port, opts.Target, opts.EntryParam)
 	if err != nil {
 		return err
 	}

@@ -21,7 +21,7 @@ func Send(action, url string, data string) (string, error) {
 
 	switch action {
 	case getCommand:
-		res, err = sendGet(url)
+		res, err = sendGet(url, data)
 	case postCommand:
 		res, err = sendPost(url, data)
 	default:
@@ -34,8 +34,15 @@ func Send(action, url string, data string) (string, error) {
 	return res, nil
 }
 
-func sendGet(url string) (string, error) {
-	_, body, errs := agent.Get(url).End()
+func sendGet(url string, data string) (string, error) {
+	var body string
+	var errs []error
+	if data == "" {
+		_, body, errs = agent.Get(url).End()
+	} else {
+		_, body, errs = agent.Get(url).Query(data).End()
+	}
+
 	if len(errs) > 0 {
 		return "", ErrRequest
 	}

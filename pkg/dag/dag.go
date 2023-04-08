@@ -14,6 +14,7 @@ type Node struct {
 	Action       string   `json:"action" default:"GET"`
 	URL          string   `json:"url"`
 	Dependencies []string `json:"dependencies,omitempty"`
+	ParamFormat  string   `json:"paramformat,omitempty"`
 }
 
 var (
@@ -32,11 +33,12 @@ func NewDAG() *DAG {
 	}
 }
 
-func NewNode(name, action, url string, dep []string) *Node {
+func NewNode(name, action, url string, dep []string, param string) *Node {
 	return &Node{
 		Name:         name,
 		Action:       action,
 		URL:          url,
 		Dependencies: dep,
+		ParamFormat:  param,
 	}
 }

@@ -1,6 +1,6 @@
-IMG ?= kasterism/test_c
+IMG ?= pluviophile225/test_c_param
 docker-build:
 	docker buildx build -t ${IMG} . --load
 
 docker-push:
-	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMG} . --push
+	docker push ${IMG} 

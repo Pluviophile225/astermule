@@ -26,8 +26,8 @@ run: fmt vet ## Run code from your host.
 test:
 	go test ./... -coverprofile cover.out
 
-STAGING_REGISTRY ?= kasterism
-IMAGE_NAME ?= astermule
+STAGING_REGISTRY ?= pluviophile225
+IMAGE_NAME ?= astermule_param
 TAG ?= latest
 
 IMG ?= ${STAGING_REGISTRY}/${IMAGE_NAME}:${TAG}
@@ -35,7 +35,7 @@ docker-build:
 	docker buildx build -t ${IMG} . --load
 
 docker-push:
-	docker buildx build --platform linux/amd64,linux/arm64 -t ${IMG} . --push
+	docker push ${IMG} 
 
 # go-get-tool will 'go get' any package $2 and install it to $1.
 PROJECT_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))

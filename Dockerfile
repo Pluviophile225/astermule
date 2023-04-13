@@ -13,6 +13,7 @@ RUN go mod download
 # Copy go source
 COPY pkg/ pkg/
 COPY cmd/ cmd/
+COPY tools/ tools/
 
 # Build
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o astermule ./cmd/main.go

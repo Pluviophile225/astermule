@@ -1,12 +1,17 @@
 package parser
 
 import (
+	"encoding/json"
+
 	"github.com/kasterism/astermule/pkg/clients/httpclient"
 	"github.com/kasterism/astermule/pkg/dag"
+
+	"github.com/kasterism/astermule/tools/whiteboard"
 )
 
 type SimpleParser struct {
 	ChanGroup map[string]*ChannelGroup
+	ActionMap map[string]map[string]string
 }
 
 type ChannelGroup struct {
@@ -14,19 +19,20 @@ type ChannelGroup struct {
 	WriteCh []chan<- Message
 }
 
-func NewSimpleParser() *SimpleParser {
+func NewSimpleParser(action map[string]map[string]string) *SimpleParser {
 	return &SimpleParser{
 		ChanGroup: make(map[string]*ChannelGroup),
+		ActionMap: action,
 	}
 }
 
-func (s *SimpleParser) Parse(d *dag.DAG) ControlPlane {
+func (s *SimpleParser) Parse(d *dag.DAG) (ControlPlane, []string) {
 	c := ControlPlane{}
 	s.Init(d)
-	s.makeChannelGroup(d)
+	exit := s.makeChannelGroup(d)
 	c.Entry, c.Exit = s.scanChannelGroup(d)
 	c.Fs = s.makeFunc(d)
-	return c
+	return c, exit
 }
 
 func (s *SimpleParser) Init(d *dag.DAG) {
@@ -38,7 +44,7 @@ func (s *SimpleParser) Init(d *dag.DAG) {
 	}
 }
 
-func (s *SimpleParser) makeChannelGroup(d *dag.DAG) {
+func (s *SimpleParser) makeChannelGroup(d *dag.DAG) []string {
 	for _, node := range d.Nodes {
 		for _, dep := range node.Dependencies {
 			ch := make(chan Message)
@@ -46,11 +52,13 @@ func (s *SimpleParser) makeChannelGroup(d *dag.DAG) {
 			s.ChanGroup[node.Name].ReadCh = append(s.ChanGroup[node.Name].ReadCh, ch)
 		}
 	}
-	// for _, node := range d.Nodes {
-	// 	if len(s.ChanGroup[node.Name].WriteCh) == 0 {
-	// 		cmd.ExitName= append(cmd.ExitName, node.Name)
-	// 	}
-	// }
+	var exit []string
+	for _, node := range d.Nodes {
+		if len(s.ChanGroup[node.Name].WriteCh) == 0 {
+			exit = append(exit, node.Name)
+		}
+	}
+	return exit
 
 }
 
@@ -90,8 +98,8 @@ func (s *SimpleParser) makeFunc(d *dag.DAG) []func() {
 				// TODO
 				// This is where the method is called to get the parameters from the ActionMap
 				// data = fun(ActionMap,node.ParamFormat)
-
-				data := ""
+				data, err := whiteboard.Bend(s.ActionMap, node.ParamFormat, nil)
+				_data := data.(string)
 				// Prepare sendMsg
 				sendMsg := &Message{}
 				sendMsg.Status.Health = true
@@ -100,15 +108,18 @@ func (s *SimpleParser) makeFunc(d *dag.DAG) []func() {
 				logger.Infoln("send msg to", node.URL)
 
 				// Determine whether to use a Get or Post request
-				res, err := httpclient.Send(node.Action, node.URL, data)
+				res, err := httpclient.Send(node.Action, node.URL, _data)
 				if err != nil {
 					logger.Errorln("httpclient error:", err)
 					sendMsg.Status.Health = false
 				} else {
 					logger.Infoln("receive respense:", res)
-					// TODO
-					// Put the result into the global variable ActionMap
-					// ActionMap[node.name] = res
+					var result map[string]string
+					err := json.Unmarshal([]byte(res), &result)
+					if err != nil {
+						logger.Fatalln("Entry Param wrong, json transform:", err)
+					}
+					s.ActionMap[node.Name] = result
 				}
 
 				for _, writeCh := range chGrp.WriteCh {

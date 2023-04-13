@@ -17,6 +17,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// ActionMap is used globally to store the list of function entry parameters
+var ActionMap map[string]map[string]string
+
 var shutdownSignals = []os.Signal{os.Interrupt, syscall.SIGTERM}
 var onlyOneSignalHandler = make(chan struct{})
 var shutdownHandler chan os.Signal
@@ -55,11 +58,10 @@ func Run(ctx context.Context, logger *logrus.Logger, opts *options.Options) erro
 		logger.Fatalln("Preflight errors:", err)
 		return err
 	}
-
-	p := parser.NewSimpleParser()
-	controlPlane := p.Parse(graph)
-
-	err = handlers.StartServer(&controlPlane, opts.Address, opts.Port, opts.Target, opts.EntryParam)
+	ActionMap = make(map[string]map[string]string)
+	p := parser.NewSimpleParser(ActionMap)
+	controlPlane, ExitName := p.Parse(graph)
+	err = handlers.StartServer(&controlPlane, opts.Address, opts.Port, opts.Target, opts.EntryParam, ActionMap, ExitName)
 	if err != nil {
 		return err
 	}

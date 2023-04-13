@@ -27,7 +27,8 @@ func getJsonTest(w http.ResponseWriter, r *http.Request) {
 	for key, value := range formData {
 		log.Println("key:", key, " => value :", value)
 	}
-	formData["name"] = "myname"
+	formData["userAgent"] = "agent"
+	formData["userName"] = "name"
 
 	// 返回json字符串给客户端
 	w.Header().Set("Content-Type", "application/json")

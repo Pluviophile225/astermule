@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kasterism/astermule/pkg/parser"
+	"github.com/Pluviophile225/astermule/pkg/parser"
 	"github.com/sirupsen/logrus"
 )
 

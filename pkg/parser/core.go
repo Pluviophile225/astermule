@@ -3,7 +3,7 @@ package parser
 import (
 	// "encoding/json"
 
-	"github.com/kasterism/astermule/pkg/dag"
+	"github.com/Pluviophile225/astermule/pkg/dag"
 	"github.com/sirupsen/logrus"
 )
 

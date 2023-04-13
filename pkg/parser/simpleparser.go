@@ -3,10 +3,10 @@ package parser
 import (
 	"encoding/json"
 
-	"github.com/kasterism/astermule/pkg/clients/httpclient"
-	"github.com/kasterism/astermule/pkg/dag"
+	"github.com/Pluviophile225/astermule/pkg/clients/httpclient"
+	"github.com/Pluviophile225/astermule/pkg/dag"
 
-	"github.com/kasterism/astermule/tools/whiteboard"
+	"github.com/Pluviophile225/astermule/tools/whiteboard"
 )
 
 type SimpleParser struct {

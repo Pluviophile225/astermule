@@ -8,10 +8,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/kasterism/astermule/cmd/app/options"
-	"github.com/kasterism/astermule/pkg/dag"
-	"github.com/kasterism/astermule/pkg/handlers"
-	"github.com/kasterism/astermule/pkg/parser"
+	"github.com/Pluviophile225/astermule/cmd/app/options"
+	"github.com/Pluviophile225/astermule/pkg/dag"
+	"github.com/Pluviophile225/astermule/pkg/handlers"
+	"github.com/Pluviophile225/astermule/pkg/parser"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

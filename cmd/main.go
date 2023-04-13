@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kasterism/astermule/cmd/app"
+	"github.com/Pluviophile225/astermule/cmd/app"
 )
 
 func main() {

@@ -1,4 +1,4 @@
-module github.com/kasterism/astermule
+module github.com/Pluviophile225/astermule
 
 go 1.18
 

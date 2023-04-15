@@ -92,10 +92,9 @@ func afterServerStart() []byte {
 	// }
 	// res["exit"] = exitmap
 	// res := parser.NewMessage(true, "")
-	// for i := range controlPlane.Exit {
-	// 	msg := <-controlPlane.Exit[i]
-	// 	msg.DeepMergeInto(res)
-	// }
+	for i := range controlPlane.Exit {
+		<-controlPlane.Exit[i]
+	}
 	// data, err := res.Marshal()
 	// if err != nil {
 	// 	logger.Errorln("Result message parse error:", err)

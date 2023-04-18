@@ -98,8 +98,18 @@ func (s *SimpleParser) makeFunc(d *dag.DAG) []func() {
 				// TODO
 				// This is where the method is called to get the parameters from the ActionMap
 				// data = fun(ActionMap,node.ParamFormat)
-				data, err := whiteboard.Bend(s.ActionMap, node.ParamFormat, nil)
-				_data := data.(string)
+				var param map[string]string
+				json.Unmarshal([]byte(node.ParamFormat), &param)
+				logger.Infoln("ActionMap: ", s.ActionMap)
+				logger.Infoln("node param format: ", node.ParamFormat)
+				logger.Infoln("rule param:", param)
+				data, err := whiteboard.Bend(param, s.ActionMap, nil)
+				logger.Infoln("3node result data:", data)
+				if err != nil {
+					logger.Errorln("error:", err)
+				}
+				_data, err := json.Marshal(data.(map[string]interface{}))
+
 				// Prepare sendMsg
 				sendMsg := &Message{}
 				sendMsg.Status.Health = true
@@ -108,7 +118,7 @@ func (s *SimpleParser) makeFunc(d *dag.DAG) []func() {
 				logger.Infoln("send msg to", node.URL)
 
 				// Determine whether to use a Get or Post request
-				res, err := httpclient.Send(node.Action, node.URL, _data)
+				res, err := httpclient.Send(node.Action, node.URL, string(_data))
 				if err != nil {
 					logger.Errorln("httpclient error:", err)
 					sendMsg.Status.Health = false

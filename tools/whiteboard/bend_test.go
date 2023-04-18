@@ -80,24 +80,52 @@ var testCases = []struct {
 	{
 		name: "test case 6: example with str and int",
 		mapping: map[interface{}]interface{}{
-			"level": "S(\"b\", \"userLevel\")",
-			"kind":  "S(\"c\", \"userKind\")",
-			"count": "K(1) + K(2)",
+			"id": "S(\"init\", \"userId\")",
 		},
-		source: map[string]interface{}{
-			"b": map[string]interface{}{
-				"userLevel": 1,
-				"name":      "123",
-			},
-			"c": map[string]interface{}{
-				"userKind": "VIP",
-				"age":      3,
+		source: map[string]map[string]string{
+			"init": {
+				"userId": "123",
 			},
 		},
 		context:        nil,
-		expectedOutput: map[interface{}]interface{}{"level": 1, "kind": "123", "count": 3},
+		expectedOutput: map[interface{}]interface{}{"id": "123"},
 		expectedErr:    nil,
 	},
+	{
+		name: "test case 7: test",
+		mapping: map[string]interface{}{
+			"id":        "S(\"init\", \"userId\")",
+			"name":      "S(\"a\", \"userName\")",
+			"userLevel": "K(\"level\")",
+		},
+		source: map[interface{}]map[string]string{
+			"init": {
+				"userId": "123",
+			},
+			"a": {
+				"userAgent": "agent",
+				"userName":  "name",
+			},
+		},
+		context:        nil,
+		expectedOutput: map[interface{}]interface{}{"id": "123", "name": "name", "userLevel": "level"},
+		expectedErr:    nil,
+	},
+}
+
+func Test_7(t *testing.T) {
+	tc := testCases[6]
+	fmt.Printf("%v\n", tc.name)
+	fmt.Println("!!!!!!!!!")
+	output, err := Bend(tc.mapping, tc.source, tc.context)
+	fmt.Println("!!!!!!!!!!!")
+	fmt.Println(output)
+	if !reflect.DeepEqual(err, tc.expectedErr) {
+		t.Errorf("expected error %v, but got %v", tc.expectedErr, err)
+	}
+	if !reflect.DeepEqual(output, tc.expectedOutput) {
+		t.Errorf("expected output %v, but got %v", tc.expectedOutput, output)
+	}
 }
 
 func TestBend_empty_mapping(t *testing.T) {
